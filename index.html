@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image modifier</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button id="modifyButton">Modify</button>
+    <p id="statusText">Progress: 0%</p>
+    <label for="imageFile">Select an image:</label>
+    <input type="file" id="imageFile">
+    <br>
+    <canvas id="testCanvas", class="imageCanvas"></canvas>
+    <div id="slideContainer">
+        <input id="videoSlider" type="range" min="0" max="60" value="0">
+    </div>
+    <button id="playButton">Play</button>
+    <button id="restartButton">Restart</button>
+    <br> <br>
+    <label for="sixSevenImageFile">Select an image:</label>
+    <input type="file" id="sixSevenImageFile">
+    <br>
+    <canvas id="67Canvas", class="imageCanvas"></canvas>
+
+    <script src="index.js"></script>
+</body>
+</html>
