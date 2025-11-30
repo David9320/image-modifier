@@ -22,6 +22,7 @@ const img = new Image();
 img.src = "capibara.png";
 
 const statusText = document.getElementById("statusText");
+const loader = document.getElementById("progressLoader");
 
 const slider = document.getElementById("videoSlider");
 slider.max = fps * animationTime;
@@ -234,6 +235,7 @@ function setTargets() {
 function setFrames() {
     let i = index;
     if(i < frameCount) {
+        loader.style.display = "inline-block";
         context.fillStyle = "rgb(0, 0, 0, 255)";
         context.fillRect(0, 0, img.width, img.height);
         for(let j = 0; j < targets.length; j++) {
@@ -253,6 +255,7 @@ function setFrames() {
         statusText.textContent = `Progress: ${Math.round(i / (frameCount - 1) * 100)}%`;
         index++;
     } else {
+        loader.style.display = "none";
         settingFramesDone = true;
         clearInterval(timer);
     }
