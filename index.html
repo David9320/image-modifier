@@ -9,8 +9,11 @@
 <body>
     <button id="modifyButton">Modify</button>
     <p id="statusText">Progress: 0%</p>
-    <label for="imageFile">Select an image:</label>
-    <input type="file" id="imageFile">
+    <br>
+    <div id="progressLoader" class="loader"></div>
+    <br>
+    <label for="imageFilea", id="imageFileLabel">Select an image:</label>
+    <input type="file" id="imageFile" class="fileInput">
     <br>
     <canvas id="testCanvas", class="imageCanvas"></canvas>
     <div id="slideContainer">
@@ -20,7 +23,7 @@
     <button id="restartButton">Restart</button>
     <br> <br>
     <label for="sixSevenImageFile">Select an image:</label>
-    <input type="file" id="sixSevenImageFile">
+    <input type="file" id="sixSevenImageFile" class="fileInput">
     <br>
     <canvas id="67Canvas", class="imageCanvas"></canvas>
 
