@@ -13,6 +13,7 @@ body {
 button {
     color: white;
     background-color: black;
+    border-radius: 5px;
 }
 
 #statusText {
@@ -25,16 +26,34 @@ button {
     margin-bottom: 5px;
 }
 
+#resultCanvas {
+    margin-top: 50px;
+}
+
+#downloadVideoHref {
+    display: block;
+}
+
+#fpsInput {
+    margin-top: 50px;
+}
+
 .fileInput::file-selector-button {
     color: white;
     background-color: black;
+    border-radius: 5px;
 }
 
 #videoSlider {
+    -webkit-appearance: none;
+    appearance: none;
     height: 15px;
     border-radius: 5px;
     background: #d3d3d3;
     outline: none;
+    .videoSlider__fill__bg {
+        background-color: black;
+    }
 }
 
 #videoSlider::-webkit-slider-thumb {
@@ -59,9 +78,14 @@ button {
     height: 20px;
     animation: spin 2s linear infinite;
     display: none;
-  }
-  
-  @keyframes spin {
+}
+
+@keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-  }
+}
+
+#videoPlayer {
+    width: 500px;
+    height: 500px;
+}

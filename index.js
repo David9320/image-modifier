@@ -3,20 +3,32 @@ let isImageLoaded = false;
 let pixels;
 let sixSevenPixels;
 let imageData;
-const animationTime = 2;
-const fps = 30;
+const defFPS = 30;
+const defAnimationTime = 2;
+const defFirstFrameTime = 0.5;
+const defLastFrameTime = 0.5;
+let animationTime = defAnimationTime;
+let fps = defFPS;
 let id = -1;
 let targets;
 let time = animationTime;
 let now;
 let lastFrame;
 let frames = [];
-const frameCount = fps * animationTime;
+let frameCount = fps * animationTime;
 let currentFrame = 0;
 let frameIndex = 0;
 let settingFramesDone = false;
 let timer;
 let play = false;
+const chunks = [];
+let recorder;
+let videoId = -1;
+let firstFrameTime = defFirstFrameTime;
+let lastFrameTime = defLastFrameTime;
+let firstFrameCount = parseInt(fps * firstFrameTime);
+let lastFrameCount = parseInt(fps * lastFrameTime);
+let calculating = false;
 
 const img = new Image();
 img.src = "capibara.png";
@@ -28,18 +40,8 @@ const slider = document.getElementById("videoSlider");
 slider.max = fps * animationTime;
 
 const playButton = document.getElementById("playButton");
-playButton.addEventListener("click", function() {
-    play = !play;
-});
 
 const restartButton = document.getElementById("restartButton");
-restartButton.addEventListener("click", function() {
-    play = true;
-    setCurrentFrame(0);
-    if(id == -1) {
-        id = setInterval(animationFrame, 1 / fps * 1000);
-    }
-});
 
 const sixSevenImg = new Image();
 sixSevenImg.src = "fatcat.png";
@@ -50,42 +52,98 @@ const context = testCanvas.getContext("2d");
 const sixSevenCanvas = document.getElementById("67Canvas");
 const sixSevenCtx = sixSevenCanvas.getContext("2d");
 
+const resultCanvas = document.getElementById("resultCanvas");
+const resultCtx = resultCanvas.getContext("2d");
+
 const modifyButton = document.getElementById("modifyButton");
+
+const fpsInput = document.getElementById("fpsInput");
+const animationTimeInput = document.getElementById("animationTimeInput");
+const firstFrameTimeInput = document.getElementById("firstFrameTimeInput");
+const lastFrameTimeInput = document.getElementById("lastFrameTimeInput");
+
+const videoDownloadHref = document.getElementById("downloadVideoHref");
+
+fpsInput.addEventListener("input", function(e) {
+    if(fpsInput.value == "") fps = defFPS;
+    else fps = parseInt(fpsInput.value);
+    setFrameCount();
+});
+animationTimeInput.addEventListener("input", function(e) {
+    if(animationTimeInput.value == "") animationTime = defAnimationTime;
+    else animationTime = parseFloat(animationTimeInput.value);
+    setFrameCount();
+});
+firstFrameTimeInput.addEventListener("input", function() {
+    if(firstFrameTimeInput.value == "") firstFrameTime = defFirstFrameTime;
+    else firstFrameTime = parseFloat(firstFrameTimeInput.value)
+    setFrameCount();
+});
+lastFrameTimeInput.addEventListener("input", function() {
+    if(lastFrameTimeInput.value == "") lastFrameTime = defLastFrameTime;
+    else lastFrameTime = parseFloat(lastFrameTimeInput.value);
+    setFrameCount();
+});
+
+playButton.addEventListener("click", function() {
+    play = !play;
+});
+
+restartButton.addEventListener("click", function() {
+    play = true;
+    setCurrentFrame(0);
+    if(id == -1) {
+        id = setInterval(animationFrame, 1 / fps * 1000);
+    }
+});
+
 modifyButton.addEventListener("click", function() {
     //modifyPixels();
     setTargets();
     index = 0;
     settingFramesDone = false;
     frames = [];
+    //recorder.start();
     timer = setInterval(setFrames, 0);
     time = animationTime;
     lastFrame = -1;
     //id = setInterval(frame, 1 / fps);
     currentFrame = 0;
     id = setInterval(animationFrame, 1 / fps * 1000);
+    calculating = true;
 });
+
+function saveChunks(e) {
+    chunks.push(e.data);
+}
 
 img.addEventListener("load", function() {
     testCanvas.width = img.width;
     testCanvas.height = img.height;
     testCanvas.style.width = `${img.width / img.height * maxHeight}px`;
     testCanvas.style.height = `${maxHeight}px`;
+
+    resultCanvas.width = img.width;
+    resultCanvas.height = img.height;
+    resultCanvas.style.width = `${img.width / img.height * maxHeight}px`;
+    resultCanvas.style.height = `${maxHeight}px`;
+
     context.drawImage(img, 0, 0);
+    resultCtx.drawImage(img, 0, 0)
     imageData = context.getImageData(0, 0, img.width, img.height);
     pixels = imageData.data;
     isImageLoaded = true;
-    slider.style.width = testCanvas.style.width;
+    slider.style.width = resultCanvas.style.width;
     refreshSixSeven();
 });
 
 slider.addEventListener("input", function() {
+    if(calculating) return;
     setCurrentFrame(parseInt(slider.value));
     if(id == -1) {
         id = setInterval(animationFrame, 1 / fps * 1000);
     }
 });
-
-
 
 function refreshSixSeven() {
     sixSevenCanvas.width = img.width;
@@ -234,29 +292,38 @@ function setTargets() {
 
 function setFrames() {
     let i = index;
-    if(i < frameCount) {
+    if(i < firstFrameCount || (i >= frameCount - lastFrameCount && i < frameCount)) {
+        frames.push(resultCtx.getImageData(0, 0, img.width, img.height).data);
+        //imageData.data = frames[i];
+        //context.putImageData(imageData, 0, 0);
+        statusText.textContent = `Rendering: ${Math.round(i / (frameCount - 1) * 100)}%`;
+        index++;
+    } else if(i < frameCount) {
         loader.style.display = "inline-block";
-        context.fillStyle = "rgb(0, 0, 0, 255)";
-        context.fillRect(0, 0, img.width, img.height);
+        resultCtx.fillStyle = "rgb(0, 0, 0, 255)";
+        resultCtx.fillRect(0, 0, img.width, img.height);
         for(let j = 0; j < targets.length; j++) {
             let color = targets[j].color; 
             let startX = targets[j].startX;
             let startY = targets[j].startY;
             let targetX = targets[j].targetX;
             let targetY = targets[j].targetY;
-            let x = startX + (targetX - startX) * i / (frameCount - 1);
-            let y = startY + (targetY - startY) * i / (frameCount - 1);
-            context.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 255)`;
-            context.fillRect(x, y, 1, 1);
+            let x = startX + (targetX - startX) * (i - firstFrameCount) / (frameCount - firstFrameCount - lastFrameCount - 1);
+            let y = startY + (targetY - startY) * (i - firstFrameCount) / (frameCount - firstFrameCount - lastFrameCount - 1);
+            resultCtx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 255)`;
+            resultCtx.fillRect(x, y, 1, 1);
         }
-        frames.push(context.getImageData(0, 0, img.width, img.height).data);
+        frames.push(resultCtx.getImageData(0, 0, img.width, img.height).data);
         //imageData.data = frames[i];
         //context.putImageData(imageData, 0, 0);
-        statusText.textContent = `Progress: ${Math.round(i / (frameCount - 1) * 100)}%`;
+        statusText.textContent = `Rendering: ${Math.round(i / (frameCount - 1) * 100)}%`;
         index++;
     } else {
+        slider.max = frameCount;
         loader.style.display = "none";
         settingFramesDone = true;
+        createVideo();
+        //setVideoPlayer();
         clearInterval(timer);
     }
 }
@@ -271,8 +338,8 @@ function frame() {
         clearInterval(id)
         for(let i = 0; i < targets.length; i++) {
             let color = targets[i].color;
-            context.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 255)`;
-            context.fillRect(targets[i].targetX, targets[i].targetY, 1, 1);
+            resultCtx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 255)`;
+            resultCtx.fillRect(targets[i].targetX, targets[i].targetY, 1, 1);
         }
         lastFrame = -1;
     } else {
@@ -284,8 +351,8 @@ function frame() {
             let targetY = targets[i].targetY;
             let x = startX + (targetX - startX) * (animationTime - time) / animationTime;
             let y = startY + (targetY - startY) * (animationTime - time) / animationTime;
-            context.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 255)`;
-            context.fillRect(x, y, 1, 1);
+            resultCtx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 255)`;
+            resultCtx.fillRect(x, y, 1, 1);
         }
         //imageData.data = pixels;
         //context.putImageData(imageData, 0, 0);
@@ -293,13 +360,12 @@ function frame() {
 }
 
 function animationFrame() {
-    console.log(currentFrame);
     if(currentFrame >= frameCount) {
         clearInterval(id);
         id = -1;
     } else if(settingFramesDone) {
         const imgData = new ImageData(frames[currentFrame], img.width, img.height);
-        context.putImageData(imgData, 0, 0);
+        resultCtx.putImageData(imgData, 0, 0);
         if(play) {
             setCurrentFrame(parseInt(currentFrame) + 1);
         }
@@ -309,4 +375,44 @@ function animationFrame() {
 function setCurrentFrame(newCurrentFrame) {
     currentFrame = newCurrentFrame;
     slider.value = newCurrentFrame;
+}
+
+function setFrameCount() {
+    frameCount = fps * animationTime;
+    firstFrameCount = fps * firstFrameTime;
+    lastFrameCount = fps * lastFrameTime;
+}
+
+function setVideoPlayer() {
+    console.log(chunks);
+    const blob = new Blob(chunks, { type: "video/webm" });
+    const videoURL = URL.createObjectURL(blob);
+    videoDownloadHref.href = videoURL;
+    calculating = false;
+}
+
+function createVideo() {
+    const cStream = resultCanvas.captureStream(fps);
+    recorder = new MediaRecorder(cStream, {
+        videoBitsPerSecond: img.width * img.height * 255 * 3
+    });
+    recorder.ondataavailable = saveChunks;
+    recorder.start();
+    recorder.onstop = setVideoPlayer;
+    currentFrame = 0;
+    videoId = setInterval(videoFrame, 1 / fps * 1000);
+}
+
+function videoFrame() {
+    if(currentFrame >= frameCount) {
+        clearInterval(videoId);
+        videoId = -1;
+        recorder.stop();
+        //setVideoPlayer();
+    } else if(settingFramesDone) {
+        const imgData = new ImageData(frames[currentFrame], img.width, img.height);
+        resultCtx.putImageData(imgData, 0, 0);
+        setCurrentFrame(parseInt(currentFrame) + 1);
+        statusText.textContent = `Creating video: ${parseInt(currentFrame / frameCount * 100)}%`
+    }
 }

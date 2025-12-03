@@ -7,26 +7,43 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <button id="modifyButton">Modify</button>
-    <p id="statusText">Progress: 0%</p>
-    <br>
-    <div id="progressLoader" class="loader"></div>
-    <br>
-    <label for="imageFilea", id="imageFileLabel">Select an image:</label>
+    <h1>Image modifier</h1>
+    <label for="imageFile">Select an image:</label>
     <input type="file" id="imageFile" class="fileInput">
     <br>
     <canvas id="testCanvas", class="imageCanvas"></canvas>
+    <br>
+    <label for="sixSevenImageFile">Select an image:</label>
+    <input type="file" id="sixSevenImageFile" class="fileInput">
+    <br>
+    <canvas id="67Canvas", class="imageCanvas"></canvas>
+    <canvas id="resultCanvas" class="imageCanvas"></canvas>
     <div id="slideContainer">
         <input id="videoSlider" type="range" min="0" max="60" value="0">
     </div>
     <button id="playButton">Play</button>
     <button id="restartButton">Restart</button>
     <br> <br>
-    <label for="sixSevenImageFile">Select an image:</label>
-    <input type="file" id="sixSevenImageFile" class="fileInput">
+    <label for="fpsInput">FPS: </label>
+    <input type="text" id="fpsInput" placeholder="30">
     <br>
-    <canvas id="67Canvas", class="imageCanvas"></canvas>
-
+    <label for="animationTimeInput">Time of animation: </label>
+    <input type="text" id="animationTimeInput" placeholder="2">
+    <br>
+    <label for="firstFrameTimeInput">Time of the first frame: </label>
+    <input type="text" id="firstFrameTimeInput" placeholder="0.5">
+    <br>
+    <label for="lastFrameTimeInput">Time of the last frame: </label>
+    <input type="text" id="lastFrameTimeInput" placeholder="0.5">
+    <br>
+    <button id="modifyButton">Modify</button>
+    <p id="statusText">Progress: 0%</p>
+    <br>
+    <div id="progressLoader" class="loader"></div>
+    <a id="downloadVideoHref" href="fatcat.png" download="video">
+        <button>Download video</button>
+    </a>
+    
     <script src="index.js"></script>
 </body>
 </html>
