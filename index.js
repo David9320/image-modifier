@@ -99,6 +99,7 @@ restartButton.addEventListener("click", function() {
 
 modifyButton.addEventListener("click", function() {
     //modifyPixels();
+    resultCtx.drawImage(img, 0, 0);
     setTargets();
     index = 0;
     settingFramesDone = false;
@@ -415,4 +416,5 @@ function videoFrame() {
         setCurrentFrame(parseInt(currentFrame) + 1);
         statusText.textContent = `Creating video: ${parseInt(currentFrame / frameCount * 100)}%`
     }
+
 }
