@@ -34,10 +34,6 @@ button {
     display: block;
 }
 
-#fpsInput {
-    margin-top: 50px;
-}
-
 .fileInput::file-selector-button {
     color: white;
     background-color: black;
@@ -45,15 +41,10 @@ button {
 }
 
 #videoSlider {
-    -webkit-appearance: none;
-    appearance: none;
     height: 15px;
     border-radius: 5px;
     background: #d3d3d3;
-    outline: none;
-    .videoSlider__fill__bg {
-        background-color: black;
-    }
+    accent-color: black;
 }
 
 #videoSlider::-webkit-slider-thumb {
@@ -88,4 +79,18 @@ button {
 #videoPlayer {
     width: 500px;
     height: 500px;
+}
+
+.videoData {
+    position: absolute;
+    left: 50%;
+}
+
+.videoDataLabel {
+    position: absolute;
+    right: 50%;
+}
+
+#videoDataContainer {
+    margin-top: 50px;
 }
