@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image modifier</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="fatcat.png">
 </head>
 <body>
     <h1>Image modifier</h1>
@@ -24,17 +25,19 @@
     <button id="playButton">Play</button>
     <button id="restartButton">Restart</button>
     <br> <br>
-    <label for="fpsInput">FPS: </label>
-    <input type="text" id="fpsInput" placeholder="30">
-    <br>
-    <label for="animationTimeInput">Time of animation: </label>
-    <input type="text" id="animationTimeInput" placeholder="2">
-    <br>
-    <label for="firstFrameTimeInput">Time of the first frame: </label>
-    <input type="text" id="firstFrameTimeInput" placeholder="0.5">
-    <br>
-    <label for="lastFrameTimeInput">Time of the last frame: </label>
-    <input type="text" id="lastFrameTimeInput" placeholder="0.5">
+    <div id="videoDataContainer">
+        <label for="fpsInput" class="videoDataLabel">FPS: </label>
+        <input type="text" id="fpsInput" placeholder="30" class="videoData">
+        <br>
+        <label for="animationTimeInput" class="videoDataLabel">Time of animation: </label>
+        <input type="text" id="animationTimeInput" placeholder="2" class="videoData">
+        <br>
+        <label for="firstFrameTimeInput" class="videoDataLabel">Time of the first frame: </label>
+        <input type="text" id="firstFrameTimeInput" placeholder="0.5" class="videoData">
+        <br>
+        <label for="lastFrameTimeInput" class="videoDataLabel">Time of the last frame: </label>
+        <input type="text" id="lastFrameTimeInput" placeholder="0.5" class="videoData">
+    </div>
     <br>
     <button id="modifyButton">Modify</button>
     <p id="statusText">Progress: 0%</p>
